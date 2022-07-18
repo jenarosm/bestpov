@@ -1,42 +1,48 @@
-import copy
+from OpenGL.GL import*
+from OpenGL.GLU import*
+from OpenGL.GLUT import*
 import numpy as np
-from Model import Model
-import Profit as p
-import bcolors as  b
+from Model3D import Model3D
+from Settings import*
 
-class Model2d(Model):
-    matrix = []     #PROYECTION MATRIX
-    vP = []         #VERTEX PROYECTED
-    profit = 0      #PROFIT
+def project_vertex(v, m):
+    v.append(1)
+    projection = np.asarray(np.matmul(m,v)).reshape(-1)
+    return projection/projection[3]
 
-    def __init__(self, model, pMatrix, mvMatrix):
-        self.V , self.vN, self.F, self.L, self.N, self.center, self.maxRadius, self.rho = model.V , model.vN, model.F, model.L, model.N, model.center, model.maxRadius, model.rho
-        self.vP = self.getProjection(pMatrix,mvMatrix)
-        self.profit = self.getProfit()
+class Model2D():
+    def __init__(self, model3, mp, mv):
+        self.faces = model3.faces
+        self.lines = model3.lines
+        self.viewpoint = model3.viewpoint
+        self.projection_matrix = np.matmul(mp,mv)
+        self.vertex = np.asarray([ project_vertex(vertex, self.projection_matrix) for vertex in model3.vertex])
+        # self.profit = self.calculateProfit()
 
+    def draw(self):
+        glMatrixMode(GL_PROJECTION)
+        gluOrtho2D(-1,1,-1,1)
+        glMatrixMode(GL_MODELVIEW)
+        glColor4fv(LINE_COLOR)
+        for line in self.lines:
+            glBegin(GL_LINE_LOOP)
+            glVertex2dv(self.vertex[line[0]-1][0:2])
+            glVertex2dv(self.vertex[line[1]-1][0:2])
+            glEnd()
 
-    def getProfit(self):
-        crossed, near = p.count_crossed(self)
-        clutter=p.count_node_collisions(self)
-        area, ratio =p.total_area(self)
-        print(b.WARN, "Crossed:" ,crossed, b.END)
-        print(b.WARN, "Near:" ,near, b.END)
-        print(b.WARN, "Clutter:" ,clutter, b.END)
-        print(b.WARN, "Ratio:" ,ratio, b.END)
-        print(b.WARN, "Area:" ,area, b.END,flush=True)
-        profit = area*ratio
-        penalty = crossed + clutter + near
-        return profit - penalty
+    def calculateProfit(self):
+        return self.viewpoint[2]*self.viewpoint[1]
 
-    def getProjection(self,pMatrix,mvMatrix):
-        self.matrix = np.matmul(pMatrix,mvMatrix)   
-        V2=copy.deepcopy(self.V)
-        for v in V2: v.append(1)
-        vP=[]
-        for v in V2:
-            mat=np.matmul(self.matrix,v)        #VERTEX PROYECTION
-            vector=np.asarray(mat).reshape(-1)
-            vector = vector/vector[3]           #VERTEX NORMALIZATION
-            vP.append(vector)                   #ADD NORMALIZED VERTEX TO MATRIX VP
-        
-        return np.array(vP)  
+if __name__=='__main__':
+    glutInit(sys.argv)
+    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH)
+    glutInitWindowSize(500, 500)
+    WndId = glutCreateWindow('')
+    model3 = Model3D('Obj\Cube.obj')
+    mv = model3.getModelviewMatrix()
+    mp = model3.getProjectionMatrix()
+    model2 = Model2D(model3, mp, mv)
+    print('Vertex:\n {}'.format(model2.vertex[:,:2]))
+    print('Faces:\n {}'.format(model2.faces))
+    print('Lines:\n {}'.format(model2.lines))
+    print('Projection Matrix:\n {}'.format(model2.projection_matrix))
