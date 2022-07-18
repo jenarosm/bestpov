@@ -4,7 +4,6 @@ import random
 from copy import deepcopy as copy
 from Settings import*
 
-isBetween= lambda x,d : d[0]<=x<=d[1]
 def neighbour(neighbours,sol,i,d,sign):
     if isBetween(sol[i]+STEP_SIZE[i]*sign,d): 
                 neighbour = copy(sol)

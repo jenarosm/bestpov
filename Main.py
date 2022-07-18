@@ -50,7 +50,7 @@ def init():
 
 """ DISPLAY FUNCTION """
 def display():
-    
+    global model3d, model2d
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
     glEnable(GL_DEPTH_TEST)
@@ -61,10 +61,16 @@ def display():
         glViewport(500,200,500,500)
         model2d.draw()
         drawString(1, optimizer.status())
+    else: 
+        model2d=Model2D(copy(model3d),mp,mv)
+        glViewport(500,200,500,500)
+        model2d.draw()
+        model3d.profit=model2d.calculateProfit()
     drawString(0, "{}".format(object_list[OBJ_INDEX].split('\\')[-1][:-4]))
     drawString(2, "{} Projection".format(PROJECTIONS[model3d.projection]))
     drawString(3, 'Rho: {}\tTheta: {}º\tPhi: {}º'.format(*model3d.viewpoint))
-    if model3d.profit: drawString(4, "Profit: {}".format(model3d.profit))
+    drawString(4, "Profit: {}".format(model3d.profit))
+    drawString(5, "Area:{} Front:{} Back:{}".format(model2d.area,model2d.front,model2d.back))
     glutSwapBuffers()
 
 """ USER INPUT FUNCTIONS """

@@ -12,7 +12,7 @@ glDisable = lambda *args: [OpenGL.GL.glDisable(i) for i in args]
 getCenter = lambda vertex: (np.amax(vertex, axis=0) + np.amin(vertex,axis=0)) / 2
 getDistance = lambda v, c: np.sqrt((v[0]-c[0])**2 + (v[1]-c[1])**2 + (v[2]-c[2])**2)
 getRadius = lambda vertex, center: np.amax([getDistance(v,center) for v in vertex])
-getRho = lambda radius, fovy: round((radius / np.tan(fovy/2*np.pi/180)) + (radius),0)
+getRho = lambda radius, fovy: round((radius / np.tan(fovy/2*np.pi/180)) + (radius/2),0)
 
 def getLines(faces):
     lines = []

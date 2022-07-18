@@ -4,6 +4,7 @@ from OpenGL.GLUT import*
 import numpy as np
 from Model3D import Model3D
 from Settings import*
+from Profit import*
 
 def project_vertex(v, m):
     v.append(1)
@@ -17,7 +18,7 @@ class Model2D():
         self.viewpoint = model3.viewpoint
         self.projection_matrix = np.matmul(mp,mv)
         self.vertex = np.asarray([ project_vertex(vertex, self.projection_matrix) for vertex in model3.vertex])
-        # self.profit = self.calculateProfit()
+        self.profit = None
 
     def draw(self):
         reset_matrices()
@@ -33,7 +34,10 @@ class Model2D():
         reset_matrices()
 
     def calculateProfit(self):
-        return self.viewpoint[2]*self.viewpoint[1]
+
+        self.area, self.ratio, self.front, self.back = total_area(self)
+        self.profit = self.area*self.ratio
+        return self.profit
 
 if __name__=='__main__':
     glutInit(sys.argv)

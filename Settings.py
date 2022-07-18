@@ -45,8 +45,13 @@ RIGHT_PANE = [500,200,500,500]
 STEP_SIZE = [0.5,5,5]
 DOMAINS = [[0,0],[0,360],[0,180]]
 
-""" Auxiliary Functions """
+""" Profit Settings """
+T = 0.1
+TOP_VIEW = [20, 90]
+TOP_VIEW_MULTIPLIER = 0.6
 
+""" Auxiliary Functions """
+isBetween= lambda x,d : d[0]<=x<=d[1]
 def reset_matrices():
     glColor4f(*BLACK)
     glMatrixMode(GL_PROJECTION)
