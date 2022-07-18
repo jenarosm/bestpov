@@ -62,6 +62,9 @@ class SA(Optimizer):
 
     def getSol(self):
         return self.best_sol
+    
+    def status(self):
+        return ("SA Optimizer temperature : {}".format(round(self.T),1))
 
 class TS(Optimizer):
 
@@ -105,3 +108,6 @@ class TS(Optimizer):
 
     def getSol(self):
         return self.best_sol
+
+    def status(self):
+        return 'TS Optimizer iterations: {}'.format(self.max_it-self.it)

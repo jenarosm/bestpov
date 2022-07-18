@@ -51,6 +51,7 @@ class Model3D:
         self.fovy = INIT_FOVY  
         self.min_rho = getRho(self.radius, self.fovy)
         self.viewpoint = [self.min_rho, INIT_THETA, INIT_PHI]
+        self.profit = None
         DOMAINS[0] = [self.min_rho,self.min_rho*2]
         self.projection = PERSPECTIVE          
 

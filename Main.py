@@ -62,10 +62,11 @@ def display():
     # model2d = Model2D(copy(model3d),mp,mv)
     if optimizer:
         model2d.draw()
-        drawString(3, 'Profit: {}'.format(optimizer.best_profit))
+        drawString(1, optimizer.status())
     drawString(0, "{}".format(objects[OBJ_INDEX].split('\\')[-1][:-4]))
-    drawString(1, "{} Projection".format(PROJECTIONS[model3d.projection]))
-    drawString(2, 'Rho: {}\tTheta: {}º\tPhi: {}º'.format(*model3d.viewpoint))
+    drawString(2, "{} Projection".format(PROJECTIONS[model3d.projection]))
+    drawString(3, 'Rho: {}\tTheta: {}º\tPhi: {}º'.format(*model3d.viewpoint))
+    if model3d.profit: drawString(4, "Profit: {}".format(model3d.profit))
     glutSwapBuffers()
 
 
@@ -80,6 +81,7 @@ def specialKeyFunction( key,x,y):
         elif ( key == GLUT_KEY_END and model3d.viewpoint[0] <= 2*model3d.min_rho): model3d.viewpoint[0] += STEP_SIZE[0]
         elif ( key == GLUT_KEY_PAGE_UP ): loadObj(-1)
         elif ( key == GLUT_KEY_PAGE_DOWN ): loadObj(+1)
+        if(key): model3d.profit = None
         glutPostRedisplay()
 def keyFunction(key,x,y):
     global optimizer
@@ -119,6 +121,7 @@ def idle():
     if optimizer.isRunning:
         if optimizer.step():
             model3d.viewpoint = optimizer.best_sol
+            model3d.profit = optimizer.best_profit
         if optimizer.hasFinished():
             optimizer = None
             glutIdleFunc(None)
