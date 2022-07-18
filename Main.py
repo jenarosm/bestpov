@@ -25,7 +25,7 @@ def loadObj(i=0):
 def drawString(position=1, text=''):
     glDisable(GL_DEPTH_TEST)
     glColor4fv(TEXT_COLOR)
-    if position == 0: height = 700-SPACING
+    if position == -1: height = 700-SPACING
     else: height = 200-(SPACING*position)
     if height >= BOTTOM_MARGIN:
         glWindowPos2f(LEFT_MARGIN, height)
@@ -60,17 +60,16 @@ def display():
     if optimizer:
         glViewport(500,200,500,500)
         model2d.draw()
-        drawString(1, optimizer.status())
+        drawString(0, optimizer.status())
     else: 
         model2d=Model2D(copy(model3d),mp,mv)
-        glViewport(500,200,500,500)
-        model2d.draw()
         model3d.profit=model2d.calculateProfit()
-    drawString(0, "{}".format(object_list[OBJ_INDEX].split('\\')[-1][:-4]))
-    drawString(2, "{} Projection".format(PROJECTIONS[model3d.projection]))
-    drawString(3, 'Rho: {}\tTheta: {}º\tPhi: {}º'.format(*model3d.viewpoint))
-    drawString(4, "Profit: {}".format(model3d.profit))
-    drawString(5, "Area:{} Front:{} Back:{}".format(model2d.area,model2d.front,model2d.back))
+    drawString(-1, "{}".format(object_list[OBJ_INDEX].split('\\')[-1][:-4]))
+    drawString(1, "{} Projection".format(PROJECTIONS[model3d.projection]))
+    drawString(2, 'Rho: {}\tTheta: {}º\tPhi: {}º'.format(*model3d.viewpoint))
+    drawString(3, "Profit: {}".format(round(model3d.profit,2)))
+    drawString(4, "Area:{} Front:{} Back:{}".format(model2d.area,model2d.front,model2d.back))
+    drawString(5, "Repulsion Force: {}".format(round(model2d.vertex_repulsion,2)))
     glutSwapBuffers()
 
 """ USER INPUT FUNCTIONS """

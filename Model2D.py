@@ -34,10 +34,12 @@ class Model2D():
         reset_matrices()
 
     def calculateProfit(self):
-
+        self.top_view = isBetween(self.viewpoint[2],TOP_VIEW)
         self.area, self.ratio, self.front, self.back = total_area(self)
         self.profit = self.area*self.ratio
-        return self.profit
+        self.vertex_repulsion = vertex_repulsion(self)
+        self.tight_angles,self.parallel_repulsion,self.crossing_edges = edge_penalties(self)
+        return self.profit/(1+ self.vertex_repulsion)
 
 if __name__=='__main__':
     glutInit(sys.argv)
