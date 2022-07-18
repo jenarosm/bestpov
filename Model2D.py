@@ -36,10 +36,11 @@ class Model2D():
     def calculateProfit(self):
         self.top_view = isBetween(self.viewpoint[2],TOP_VIEW)
         self.area, self.ratio, self.front, self.back = total_area(self)
-        self.profit = self.area*self.ratio
         self.vertex_repulsion = vertex_repulsion(self)
         self.tight_angles,self.parallel_repulsion,self.crossing_edges = edge_penalties(self)
-        return self.profit/(1+ self.vertex_repulsion)
+
+        self.profit = self.area*self.ratio/(1+self.tight_angles+self.parallel_repulsion+self.crossing_edges+self.vertex_repulsion)*(self.top_view*TOP_VIEW_MULTIPLIER)
+        return self.profit
 
 if __name__=='__main__':
     glutInit(sys.argv)

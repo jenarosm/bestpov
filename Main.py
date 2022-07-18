@@ -68,8 +68,8 @@ def display():
     drawString(1, "{} Projection".format(PROJECTIONS[model3d.projection]))
     drawString(2, 'Rho: {}\tTheta: {}º\tPhi: {}º'.format(*model3d.viewpoint))
     drawString(3, "Profit: {}".format(round(model3d.profit,2)))
-    drawString(4, "Area:{} Front:{} Back:{}".format(model2d.area,model2d.front,model2d.back))
-    drawString(5, "Repulsion Force: {}".format(round(model2d.vertex_repulsion,2)))
+    drawString(4, "Area:{} Front:{} Back:{} V_Rep: {}".format(model2d.area,model2d.front,model2d.back,round(model2d.vertex_repulsion,2)))
+    drawString(5, "Tight: {} Crossed: {} P_Rep: {}".format(round(model2d.tight_angles,2),round(model2d.crossing_edges,2),round(model2d.parallel_repulsion,2)))
     glutSwapBuffers()
 
 """ USER INPUT FUNCTIONS """
