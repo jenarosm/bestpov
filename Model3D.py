@@ -22,7 +22,7 @@ def getLines(faces):
     lines = [np.sort(l) for l in lines]
     return np.unique(lines, axis=0)
 
-def Polar2Cartesian(v3):
+def polar2Cartesian(v3):
     rho, theta, phi =v3[0], np.deg2rad(v3[1]), np.deg2rad(v3[2])
     if phi == 0: phi = 1e-10
     return rho*np.sin(theta)*np.sin(phi) , rho*np.cos(phi), rho*np.cos(theta)*np.sin(phi)
@@ -80,7 +80,7 @@ class Model3D:
     def getModelviewMatrix(self):
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()
-        gluLookAt(*Polar2Cartesian(self.viewpoint),0,0,0,0,1,0)
+        gluLookAt(*polar2Cartesian(self.viewpoint),0,0,0,0,1,0)
         glTranslatef(*-self.center)
         return np.matrix(glGetFloatv(GL_MODELVIEW_MATRIX)).transpose()
 

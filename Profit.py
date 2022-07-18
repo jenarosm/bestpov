@@ -1,6 +1,4 @@
 import math
-from this import d
-from unittest import result
 import numpy as np
 from Settings import*
 
@@ -95,15 +93,15 @@ def edge_penalties(model2d):
 				if(angle<10): tight_angles+=1
 			else:
 				den=(p4[1]-p3[1])*(p2[0]-p1[0])-(p4[0]-p3[0])*(p2[1]-p1[1])
-				# if(isBetween(den,[-0.05,0.05]))
-				if( angle < 1):
+				if(isBetween(den,[-0.05,0.05])):
+				# if( angle < 1):
 					#If is parallel
 					parallel_repulsion += rep_force(segment_distance(p1,p2,p3,p4),EDGES_THRESHOLD)
-
-				ua = ((p4[0]-p3[0])*(p1[1]-p3[1])-(p4[1]-p3[1])*(p1[0]-p3[0]))/den
-				ub = ((p2[0]-p1[0])*(p1[1]-p3[1])-(p2[1]-p1[1])*(p1[0]-p3[0]))/den
-				#If is cross
-				if isBetween(ua,[-0.01,1.01]) and isBetween(ub,[-0.01,1.01]):
-					crossing_edges += 1
+				else:
+					ua = ((p4[0]-p3[0])*(p1[1]-p3[1])-(p4[1]-p3[1])*(p1[0]-p3[0]))/den
+					ub = ((p2[0]-p1[0])*(p1[1]-p3[1])-(p2[1]-p1[1])*(p1[0]-p3[0]))/den
+					#If is cross
+					if isBetween(ua,[-0.01,1.01]) and isBetween(ub,[-0.01,1.01]):
+						crossing_edges += 1
 
 	return tight_angles/len(model2d.lines), parallel_repulsion/len(model2d.lines), crossing_edges/len(model2d.lines)
