@@ -67,13 +67,6 @@ class Model3D:
                     self.faces.append([int(f.split('/')[0]) for f in line[1:]])
             file.close
 
-    def getModelviewMatrix(self):
-        glMatrixMode(GL_MODELVIEW)
-        glLoadIdentity()
-        gluLookAt(*Polar2Cartesian(self.viewpoint),0,0,0,0,1,0)
-        glTranslatef(*-self.center)
-        return np.matrix(glGetFloatv(GL_MODELVIEW_MATRIX)).transpose()
-
     def getProjectionMatrix(self):
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
@@ -84,13 +77,27 @@ class Model3D:
             glOrtho(-rho/2,rho/2,-rho/2,rho/2, 0, 50)
         return np.matrix(glGetFloatv(GL_PROJECTION_MATRIX)).transpose()
 
+    def getModelviewMatrix(self):
+        glMatrixMode(GL_MODELVIEW)
+        glLoadIdentity()
+        gluLookAt(*Polar2Cartesian(self.viewpoint),0,0,0,0,1,0)
+        glTranslatef(*-self.center)
+        return np.matrix(glGetFloatv(GL_MODELVIEW_MATRIX)).transpose()
+
+    
     def draw(self):
+        reset_matrices()
+        """ Get Matrices """
+        mp = self.getProjectionMatrix()
+        mv = self.getModelviewMatrix()
         """ Draw Stipple Lines """
         drawPolygons(self, LINE_COLOR, GL_LINE, [GL_LINE_STIPPLE])
         """ Draw Faces """
         drawPolygons(self, FACE_COLOR, GL_FILL, [GL_BLEND, GL_CULL_FACE, GL_POLYGON_OFFSET_FILL])
         """ Draw Front Lines """
-        drawPolygons(self, LINE_COLOR, GL_LINE)       
+        drawPolygons(self, LINE_COLOR, GL_LINE)
+        reset_matrices()
+        return mp, mv
 
 if __name__=='__main__':
     glutInit(sys.argv)

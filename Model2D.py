@@ -20,6 +20,7 @@ class Model2D():
         # self.profit = self.calculateProfit()
 
     def draw(self):
+        reset_matrices()
         glMatrixMode(GL_PROJECTION)
         gluOrtho2D(-1,1,-1,1)
         glMatrixMode(GL_MODELVIEW)
@@ -29,6 +30,7 @@ class Model2D():
             glVertex2dv(self.vertex[line[0]-1][0:2])
             glVertex2dv(self.vertex[line[1]-1][0:2])
             glEnd()
+        reset_matrices()
 
     def calculateProfit(self):
         return self.viewpoint[2]*self.viewpoint[1]

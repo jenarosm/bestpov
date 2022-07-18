@@ -1,4 +1,5 @@
 from multiprocessing.pool import INIT
+from OpenGL.GL import*
 from OpenGL.GLUT import*
 
 """Static Variables"""
@@ -40,10 +41,17 @@ WINDOW_SIZE = [1000, 700]
 LEFT_PANE = [0,200,500,500]
 RIGHT_PANE = [500,200,500,500]
 
-""" Optimizer settings """
+""" Optimizer Settings """
 STEP_SIZE = [0.5,5,5]
 DOMAINS = [[0,0],[0,360],[0,180]]
 
+""" Auxiliary Functions """
 
+def reset_matrices():
+    glColor4f(*BLACK)
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
+    glMatrixMode(GL_MODELVIEW)
+    glLoadIdentity()
 
 

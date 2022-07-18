@@ -10,33 +10,17 @@ from copy import deepcopy as copy
 import glob
 import Optimizer
 
+""" GLOBAL VARIABLES """
 model3d: Model3D = None
 model2d: Model2D = None
 optimizer: Optimizer.Optimizer = None
-objects: List
+object_list: List
 
-
+""" AUXILIARY FUNCTIONS """
 def loadObj(i=0):
     global OBJ_INDEX, model3d
-    OBJ_INDEX = (OBJ_INDEX + i)%len(objects)
-    model3d = Model3D(objects[OBJ_INDEX])
-
-def init():
-    glutInit(sys.argv)
-    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH)
-    glutInitWindowSize(WINDOW_SIZE[0], WINDOW_SIZE[1])
-    glutCreateWindow('BestPOV')
-    glClearColor(*BACKGROUND_COLOR)
-    glPolygonOffset(1.0,1.0)
-    glLineStipple(*STIPPLE_STYLE)
-    glLineWidth(LINE_WIDTH)
-    
-def resetGL():
-    glColor4f(*BLACK)
-    glMatrixMode(GL_PROJECTION)
-    glLoadIdentity()
-    glMatrixMode(GL_MODELVIEW)
-    glLoadIdentity()
+    OBJ_INDEX = (OBJ_INDEX + i)%len(object_list)
+    model3d = Model3D(object_list[OBJ_INDEX])
 
 def drawString(position=1, text=''):
     glDisable(GL_DEPTH_TEST)
@@ -48,27 +32,40 @@ def drawString(position=1, text=''):
         for c in text:
             glutBitmapCharacter(FONT, ord(c))
 
+""" PROGRAM INITIALIZATION """
+def init():
+    """ Object Loading """
+    global object_list
+    object_list = glob.glob(OBJ_PATH + '*.obj')
+    loadObj()
+    """ Glut and OpenGL """
+    glutInit(sys.argv)
+    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH)
+    glutInitWindowSize(*WINDOW_SIZE)
+    glutCreateWindow('BestPOV')
+    glClearColor(*BACKGROUND_COLOR)
+    glPolygonOffset(1.0,1.0)
+    glLineStipple(*STIPPLE_STYLE)
+    glLineWidth(LINE_WIDTH)
+
+""" DISPLAY FUNCTION """
 def display():
+    
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
     glEnable(GL_DEPTH_TEST)
-    resetGL()
+
     glViewport(0,200,500,500)
-    mp = model3d.getProjectionMatrix()
-    mv = model3d.getModelviewMatrix()
-    model3d.draw()
-    glViewport(500,200,500,500)
-    resetGL()
-    # model2d = Model2D(copy(model3d),mp,mv)
+    mp, mv = model3d.draw()
     if optimizer:
+        glViewport(500,200,500,500)
         model2d.draw()
         drawString(1, optimizer.status())
-    drawString(0, "{}".format(objects[OBJ_INDEX].split('\\')[-1][:-4]))
+    drawString(0, "{}".format(object_list[OBJ_INDEX].split('\\')[-1][:-4]))
     drawString(2, "{} Projection".format(PROJECTIONS[model3d.projection]))
     drawString(3, 'Rho: {}\tTheta: {}º\tPhi: {}º'.format(*model3d.viewpoint))
     if model3d.profit: drawString(4, "Profit: {}".format(model3d.profit))
     glutSwapBuffers()
-
 
 """ USER INPUT FUNCTIONS """
 def specialKeyFunction( key,x,y):
@@ -104,7 +101,7 @@ def keyFunction(key,x,y):
             loadObj()
     glutPostRedisplay()
         
-
+""" PROFIT CALCULATION """
 def cost_fn(viewpoint):
     global model2d
     bg_model3=copy(model3d)
@@ -127,12 +124,11 @@ def idle():
             glutIdleFunc(None)
     glutPostRedisplay()
 
+""" MAIN LOOP """
 if __name__ == '__main__':
     init()
     glutDisplayFunc(display)
     glutKeyboardFunc(keyFunction)
     glutSpecialFunc(specialKeyFunction)
     glutIdleFunc(None)
-    objects = glob.glob(OBJ_PATH + '*.obj')
-    loadObj()
     glutMainLoop()
