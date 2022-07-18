@@ -1,7 +1,6 @@
 import math
 from unittest import result
 import numpy as np
-import bcolors as b
 
 """ Cálculo de Area y Caras"""
 def total_area(model2d):
@@ -82,6 +81,7 @@ def count_crossed(model2d):
 
 	return 2*count/len(model2d.L), near
 
+""" Vertices cercanos """
 def count_node_collisions(model2d):
 	vP = model2d.vP
 	count = 0
@@ -92,24 +92,7 @@ def count_node_collisions(model2d):
 			(x2,y2) = vP[j][0], vP[j][1]
 			# Get the distance between them
 			dist = math.sqrt(math.pow(x2-x1,2) + math.pow(y2-y1,2))
-
-
-			# Penalize nodes closer than 60.0
-			# if (dist<0.1):
-			# 	count+=3
-			# elif (dist < 0.2):
-			# 	count += 2
-			# elif (dist < 0.3):
-			# 	count += 1
-			
 			count += rep_force(dist)
-			# # Or nodes close that 150 pixeles in the same horizontal line
-			# elif abs(y2-y1) < 0.02 and abs(x2-x1)<0.1:
-
-			#     count += 1
-			# # Or vertically and horizontally aligned nodes
-			# elif abs(y2-y1) < 0.05 or abs(x2-x1) < 0.05:
-			#     count += 1
 	return count
 
 
