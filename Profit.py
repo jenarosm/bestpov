@@ -1,34 +1,34 @@
 import math
 from unittest import result
 import numpy as np
+from Settings import*
 
-""" Cálculo de Area y Caras"""
+shoeLaceFormula = lambda vertices: sum([vertices[i-1][0]*vertices[i][1] - vertices[i][0]*vertices[i-1][1] for i in range(len(vertices))])/2
+
+""" RATIOS AND REPULSION """
+def face_balance_ratio(front, back):
+	if(front and back):
+		return (front*back)*(2*front)/(front+back)
+
+def rep_force(d, t=0.1):
+	r= 1/ (1 + np.exp( (1/t)*(d/t-1/2) ))
+	return r
+
+""" AREA CALCULATION """
 def total_area(model2d):
-	area, shown, hidden = 0,0,0
-	for face in model2d.F:
-		vertices =np.array([model2d.vP[vertex-1] for vertex in face])
-		if np.max(vertices[:,[0,1]])>1.0 or np.min(vertices[:,[0,1]])<-1.0: return 0,0
-		# vertices = []
-		# for vertex  in face:
-		# 	vertices.append(model2d.vP[vertex-1])
+	total_area, front, back = 0,0,0
+	#Check object is inside canvas
+	if any( (not isBetween(x,[-1,1]) or not isBetween(y,[-1,1])) for x, y in model2d.vertex[:,[0,1]]): return 0,0,0,0
+	#Detect faces area and orientation
+	for face in model2d.faces:
+		vertices =np.array([model2d.vertex[vertex-1] for vertex in face])
+		face_area = shoeLaceFormula(vertices)
+		if (face_area>=0): front += 1
+		else: back += 1
+		total_area += abs(face_area)
 
-		result= shoeLaceFormula(vertices, model2d)
-		area += result[0]
-		if result[1]: shown += 1
-		else: hidden += 1
-	ratio = shown/len(model2d.F)
-	return area,ratio
+	return total_area, face_balance_ratio(front,back), front, back
 
-"""Cálculo de area de polinomio"""	
-def shoeLaceFormula(vertices, model2d):
-	area=0
-	faces=False
-	for i in range(0,len(vertices)):
-		"""Calculo del area del polinomio"""
-		area += vertices[i-1][0]*vertices[i][1] - vertices[i][0]*vertices[i-1][1]
-	if(area>0): faces = True
-
-	return abs(area)/2, faces
 
 """Cálculo de cruces"""
 def count_crossed(model2d):
