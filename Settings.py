@@ -42,7 +42,7 @@ LEFT_PANE = [0,200,500,500]
 RIGHT_PANE = [500,200,500,500]
 
 """ Optimizer Settings """
-STEP_SIZE = [0.5,5,5]
+STEP_SIZE = [0.1,5,5]
 DOMAINS = [[0,0],[0,360],[0,180]]
 
 """ Profit Settings """

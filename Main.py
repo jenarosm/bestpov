@@ -1,11 +1,11 @@
 from pickletools import optimize
 from typing import List
-from OpenGL.GL import*
-from OpenGL.GLU import*
-from OpenGL.GLUT import*
-from Model3D import*
-from Model2D import*
-from Settings import*
+from OpenGL.GL import *
+from OpenGL.GLU import *
+from OpenGL.GLUT import *
+from Model3D import *
+from Model2D import *
+from Settings import *
 from copy import deepcopy as copy
 import glob
 import Optimizer
