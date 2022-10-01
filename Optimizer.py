@@ -26,7 +26,7 @@ class Optimizer:
         return neighbours
 
 class SA(Optimizer):
-    def __init__(self, cost_fn, start_sol, domains, T=1000, cool_factor = 0.995):
+    def __init__(self, cost_fn, start_sol, domains, T=DEFAULT_SA_TEMPERATURE, cool_factor = 0.995):
         super().__init__(cost_fn,start_sol,domains)
         self.T = T
         self.cool_factor = cool_factor
@@ -52,8 +52,6 @@ class SA(Optimizer):
                 found = True
         # Decrease temperature
         self.T = self.cool_factor * self.T
-        # Get the next solution and return it
-        neighbours = self.neighbours_fn(self.domains, self.sol)
         return found
 
     def hasFinished(self):
@@ -63,11 +61,11 @@ class SA(Optimizer):
         return self.best_sol
     
     def status(self):
-        return ("SA Optimizer temperature : {}".format(round(self.T),1))
+        return ("SA Optimizer temperature : {}".format(round(self.T,1)))
 
 class TS(Optimizer):
 
-    def __init__(self, cost_fn, start_sol, domains, max_it=1000):
+    def __init__(self, cost_fn, start_sol, domains, max_it=DEFAULT_TS_ITERATIONS):
         super().__init__(cost_fn,start_sol,domains)
         self.max_it = max_it
         self.explored=[start_sol]

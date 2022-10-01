@@ -22,13 +22,13 @@ def loadObj(i=0):
     OBJ_INDEX = (OBJ_INDEX + i)%len(object_list)
     model3d = Model3D(object_list[OBJ_INDEX])
 
-def drawString(position=1, text=''):
+def drawString(position=1, text='', column=0):
     glDisable(GL_DEPTH_TEST)
     glColor4fv(TEXT_COLOR)
     if position == -1: height = 700-SPACING
     else: height = 200-(SPACING*position)
     if height >= BOTTOM_MARGIN:
-        glWindowPos2f(LEFT_MARGIN, height)
+        glWindowPos2f(LEFT_MARGIN+(500*column), height)
         for c in text:
             glutBitmapCharacter(FONT, ord(c))
 
@@ -60,16 +60,29 @@ def display():
     if optimizer:
         glViewport(500,200,500,500)
         model2d.draw()
-        drawString(0, optimizer.status())
+        if(optimizer.isRunning):
+            drawString(0, "Running optimizer...")
+        else:
+            drawString(0, "Optimizer paused!")
+        drawString(1, optimizer.status(),0)
+
+        drawString(-1, "T/S - Start \t\t SPACE - Pause \t\t ENTER - Stop",1)
+        drawString(0, "Area:{} Front:{} Back:{} V_Rep: {}".format(model2d.area,model2d.front,model2d.back,round(model2d.vertex_repulsion,2)),1)
+        drawString(1, "Tight: {} Crossed: {} P_Rep: {}".format(round(model2d.tight_angles,2),round(model2d.crossing_edges,2),round(model2d.parallel_repulsion,2)),1)
+        drawString(3, "{} Projection".format(PROJECTIONS[model3d.projection_type]),1)
+        drawString(4, 'Rho: {}\tTheta: {}º\tPhi: {}º'.format(*np.round(model2d.viewpoint)),1)
+        drawString(5, "Profit: {}".format(round(model2d.profit,2)),1)
     else: 
         model2d=Model2D(copy(model3d),mp,mv)
         model3d.profit=model2d.calculateProfit()
+        drawString(0, "T/S - Start \t\t SPACE - Pause \t\t ENTER - Reset")
+        drawString(1, "ARROWS - Rotate \t\t PgUp/PgDn - Cycle \t\t P - Change Projection")
     drawString(-1, "{}".format(object_list[OBJ_INDEX].split('\\')[-1][:-4]))
-    drawString(1, "{} Projection".format(PROJECTIONS[model3d.projection]))
-    drawString(2, 'Rho: {}\tTheta: {}º\tPhi: {}º'.format(*model3d.viewpoint))
-    drawString(3, "Profit: {}".format(round(model3d.profit,2)))
-    drawString(4, "Area:{} Front:{} Back:{} V_Rep: {}".format(model2d.area,model2d.front,model2d.back,round(model2d.vertex_repulsion,2)))
-    drawString(5, "Tight: {} Crossed: {} P_Rep: {}".format(round(model2d.tight_angles,2),round(model2d.crossing_edges,2),round(model2d.parallel_repulsion,2)))
+    drawString(3, "{} Projection".format(PROJECTIONS[model3d.projection_type]))
+    drawString(4, 'Rho: {}\tTheta: {}º\tPhi: {}º'.format(*np.round(model3d.viewpoint,3)))
+    drawString(5, "Profit: {}".format(round(model3d.profit,2)))
+    # drawString(4, "Area:{} Front:{} Back:{} V_Rep: {}".format(model3d.projection.area,model3d.projection.front,model3d.projection.back,round(model3d.projection.vertex_repulsion,2)))
+    # drawString(5, "Tight: {} Crossed: {} P_Rep: {}".format(round(model3d.tight_angles,2),round(model3d.crossing_edges,2),round(model3d.parallel_repulsion,2)))
     glutSwapBuffers()
 
 """ USER INPUT FUNCTIONS """
@@ -88,7 +101,7 @@ def specialKeyFunction( key,x,y):
 def keyFunction(key,x,y):
     global optimizer
     if key.lower() == b'p' and not optimizer:
-        model3d.projection = (model3d.projection + 1)%len(PROJECTIONS)
+        model3d.projection_type = (model3d.projection_type + 1)%len(PROJECTIONS)
     if key.lower() == b's' and not optimizer:
         optimizer = Optimizer.SA(cost_fn,model3d.viewpoint,DOMAINS)
         glutIdleFunc(idle)
@@ -119,11 +132,12 @@ def cost_fn(viewpoint):
 
 """" IDLE FUNCTION """
 def idle():
-    global optimizer
+    global optimizer, model2d
     if optimizer.isRunning:
         if optimizer.step():
             model3d.viewpoint = optimizer.best_sol
             model3d.profit = optimizer.best_profit
+            model3d.projection = copy(model2d)
         if optimizer.hasFinished():
             optimizer = None
             glutIdleFunc(None)

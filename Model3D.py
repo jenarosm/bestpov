@@ -53,7 +53,8 @@ class Model3D:
         self.viewpoint = [self.min_rho, INIT_THETA, INIT_PHI]
         self.profit = None
         DOMAINS[0] = [self.min_rho,self.min_rho*2]
-        self.projection = PERSPECTIVE          
+        self.projection_type = PERSPECTIVE   
+    
 
     def load(self, filename):
         with open(filename, 'r') as file:
@@ -70,9 +71,9 @@ class Model3D:
     def getProjectionMatrix(self):
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        if(self.projection == PERSPECTIVE):
+        if(self.projection_type == PERSPECTIVE):
             gluPerspective(self.fovy, 1, 0.1, 50)
-        elif(self.projection == ORTHONORMAL):
+        elif(self.projection_type == ORTHONORMAL):
             rho = self.viewpoint[0]
             glOrtho(-rho/2,rho/2,-rho/2,rho/2, 0, 50)
         return np.matrix(glGetFloatv(GL_PROJECTION_MATRIX)).transpose()
