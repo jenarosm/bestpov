@@ -39,7 +39,7 @@ class Model2D():
         self.vertex_repulsion = vertex_repulsion(self)
         self.tight_angles,self.parallel_repulsion,self.crossing_edges = edge_penalties(self)
 
-        self.profit = self.area*self.ratio/(1+self.tight_angles+self.parallel_repulsion+self.crossing_edges+self.vertex_repulsion)*(self.top_view*TOP_VIEW_MULTIPLIER)
+        self.profit = self.area*self.ratio*(1+self.top_view*TOP_VIEW_MULTIPLIER)/(1+self.tight_angles+self.parallel_repulsion+self.crossing_edges+self.vertex_repulsion)
         return self.profit
 
 if __name__=='__main__':

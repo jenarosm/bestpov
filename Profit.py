@@ -11,10 +11,6 @@ def face_balance_ratio(front, back):
 
 rep_force = lambda d, t: 1/ (1 + np.exp( (1/t)*(d/t-1/2) ))
 
-""" DETECT LINE INTERSECTION """
-def intersects(p1, p2, p3, p4):
-	pass
-
 """ CHECK IF LINES ARE ADJACENT """
 isAdjacent = lambda l1,l2: any(v in l1 for v in l2)
 

@@ -67,8 +67,9 @@ def display():
         drawString(1, optimizer.status(),0)
 
         drawString(-1, "T/S - Start \t\t SPACE - Pause \t\t ENTER - Stop",1)
-        drawString(0, "Area:{} Front:{} Back:{} V_Rep: {}".format(model2d.area,model2d.front,model2d.back,round(model2d.vertex_repulsion,2)),1)
-        drawString(1, "Tight: {} Crossed: {} P_Rep: {}".format(round(model2d.tight_angles,2),round(model2d.crossing_edges,2),round(model2d.parallel_repulsion,2)),1)
+        drawString(0, "Area:{} Front:{} Back:{}  V_Rep: {}".format(model2d.area,model2d.front,model2d.back,round(model2d.vertex_repulsion,2)),1)
+        drawString(1, "Ratio: {} TopView: {}".format(model2d.ratio,model2d.top_view),1)
+        drawString(2, "Tight: {} Crossed: {} P_Rep: {}".format(round(model2d.tight_angles,2),round(model2d.crossing_edges,2),round(model2d.parallel_repulsion,2)),1)
         drawString(3, "{} Projection".format(PROJECTIONS[model3d.projection_type]),1)
         drawString(4, 'Rho: {}\tTheta: {}º\tPhi: {}º'.format(*np.round(model2d.viewpoint)),1)
         drawString(5, "Profit: {}".format(round(model2d.profit,2)),1)
@@ -76,8 +77,10 @@ def display():
         model2d=Model2D(copy(model3d),mp,mv)
         model3d.profit=model2d.calculateProfit()
         drawString(0, "T/S - Start \t\t SPACE - Pause \t\t ENTER - Reset")
-        drawString(1, "ARROWS - Rotate \t\t PgUp/PgDn - Cycle \t\t P - Change Projection")
+        drawString(1, "ARROWS - Rotate \t\t PgUp/PgDn - Cycle")
+        drawString(2, "P - Change Projection")
     drawString(-1, "{}".format(object_list[OBJ_INDEX].split('\\')[-1][:-4]))
+
     drawString(3, "{} Projection".format(PROJECTIONS[model3d.projection_type]))
     drawString(4, 'Rho: {}\tTheta: {}º\tPhi: {}º'.format(*np.round(model3d.viewpoint,3)))
     drawString(5, "Profit: {}".format(round(model3d.profit,2)))
