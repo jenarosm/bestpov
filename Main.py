@@ -1,4 +1,5 @@
 from pickletools import optimize
+import time
 from typing import List
 from OpenGL.GL import *
 from OpenGL.GLU import *
@@ -60,7 +61,9 @@ def display():
     if optimizer:
         glViewport(500,200,500,500)
         model2d.draw()
-        if(optimizer.isRunning):
+        if(optimizer.isRunning) and optimizer.is_cooling:
+            drawString(0, "Cooling...")
+        elif(optimizer.isRunning):
             drawString(0, "Running optimizer...")
         else:
             drawString(0, "Optimizer paused!")
@@ -90,6 +93,16 @@ def display():
 
 """ USER INPUT FUNCTIONS """
 def specialKeyFunction( key,x,y):
+    global optimizer
+    if DEMO and optimizer != None:
+        if ( key == GLUT_KEY_PAGE_DOWN ):
+            if optimizer:
+                optimizer = None
+                glutIdleFunc(None)
+            time.sleep(0.5)
+            loadObj(+1)
+            optimizer = Optimizer.TS(cost_fn,model3d.viewpoint,DOMAINS)
+            glutIdleFunc(idle)
     if not optimizer:
         if   ( key == GLUT_KEY_LEFT ): model3d.viewpoint[1] = (model3d.viewpoint[1] + STEP_SIZE[1]) % 360
         elif ( key == GLUT_KEY_RIGHT ): model3d.viewpoint[1] = (model3d.viewpoint[1] - STEP_SIZE[1]) % 360
@@ -102,7 +115,7 @@ def specialKeyFunction( key,x,y):
         if(key): model3d.profit = None
         glutPostRedisplay()
 def keyFunction(key,x,y):
-    global optimizer
+    global optimizer, DEMO
     if key.lower() == b'p' and not optimizer:
         model3d.projection_type = (model3d.projection_type + 1)%len(PROJECTIONS)
     if key.lower() == b's' and not optimizer:
@@ -120,6 +133,8 @@ def keyFunction(key,x,y):
             glutIdleFunc(None)
         else: 
             loadObj()
+
+
     glutPostRedisplay()
         
 """ PROFIT CALCULATION """
@@ -135,7 +150,7 @@ def cost_fn(viewpoint):
 
 """" IDLE FUNCTION """
 def idle():
-    global optimizer, model2d
+    global optimizer, model2d, DEMO
     if optimizer.isRunning:
         if optimizer.step():
             model3d.viewpoint = optimizer.best_sol
@@ -145,6 +160,11 @@ def idle():
             optimizer = None
             glutIdleFunc(None)
     glutPostRedisplay()
+    if DEMO and optimizer==None:
+        time.sleep(0.5)
+        loadObj(+1)
+        optimizer = Optimizer.TS(cost_fn,model3d.viewpoint,DOMAINS)
+        glutIdleFunc(idle)
 
 """ MAIN LOOP """
 if __name__ == '__main__':

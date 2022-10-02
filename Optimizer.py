@@ -4,10 +4,12 @@ import random
 from copy import deepcopy as copy
 from Settings import*
 
-def neighbour(neighbours,sol,i,d,sign):
-    if isBetween(sol[i]+STEP_SIZE[i]*sign,d): 
+def neighbour(neighbours,sol,i,d,sign,is_cooling):
+    if is_cooling: step = round(STEP_SIZE[i]*COOL_FACTOR,2)
+    else: step = STEP_SIZE[i]
+    if isBetween(sol[i]+step*sign,d): 
                 neighbour = copy(sol)
-                neighbour[i]+=STEP_SIZE[i]*sign
+                neighbour[i]+=step*sign
                 neighbours.append(neighbour)
 
 class Optimizer:
@@ -17,12 +19,13 @@ class Optimizer:
         self.best_profit = self.profit = cost_fn(start_sol)
         self.domains = domains
         self.isRunning = True
+        self.is_cooling = False
     
     def neighbours_fn(self,domains, sol):
         neighbours = []
         for i, d in enumerate(domains):
-            neighbour(neighbours,sol,i,d,+1)
-            neighbour(neighbours,sol,i,d,-1)
+            neighbour(neighbours,sol,i,d,+1,self.is_cooling)
+            neighbour(neighbours,sol,i,d,-1,self.is_cooling)
         return neighbours
 
 class SA(Optimizer):
@@ -31,6 +34,7 @@ class SA(Optimizer):
         self.T = T
         self.cool_factor = cool_factor
         self.best_E=self.Ea=self.best_profit
+        
 
     def step(self):
         """Get next solution"""
@@ -75,6 +79,11 @@ class TS(Optimizer):
     def step(self):
         found=False
         if self.it < self.max_it:
+            #Cooling
+            if (self.max_it-self.it)/self.max_it<COOL_THRESHOLD and not self.is_cooling:
+                self.is_cooling=True
+                self.sol = self.best_sol
+                self.profit = self.best_profit
             #Find not explored neighbours
             neighbours = self.neighbours_fn(self.domains, self.sol)
             unexplored = [neighbour for neighbour in neighbours if neighbour not in self.explored]
