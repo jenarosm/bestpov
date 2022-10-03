@@ -94,15 +94,14 @@ def display():
 """ USER INPUT FUNCTIONS """
 def specialKeyFunction( key,x,y):
     global optimizer
-    if DEMO and optimizer != None:
-        if ( key == GLUT_KEY_PAGE_DOWN ):
-            if optimizer:
-                optimizer = None
-                glutIdleFunc(None)
-            time.sleep(0.5)
-            loadObj(+1)
-            optimizer = Optimizer.TS(cost_fn,model3d.viewpoint,DOMAINS)
-            glutIdleFunc(idle)
+    if DEMO and optimizer != None and key == GLUT_KEY_PAGE_DOWN:
+        if optimizer:
+            optimizer = None
+            glutIdleFunc(None)
+        time.sleep(0.5)
+        loadObj(+1)
+        optimizer = Optimizer.TS(cost_fn,model3d.viewpoint,DOMAINS)
+        glutIdleFunc(idle)
     if not optimizer:
         if   ( key == GLUT_KEY_LEFT ): model3d.viewpoint[1] = (model3d.viewpoint[1] + STEP_SIZE[1]) % 360
         elif ( key == GLUT_KEY_RIGHT ): model3d.viewpoint[1] = (model3d.viewpoint[1] - STEP_SIZE[1]) % 360
