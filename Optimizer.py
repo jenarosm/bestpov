@@ -12,6 +12,7 @@ def neighbour(neighbours,sol,i,d,sign,is_cooling):
                 neighbour[i]+=step*sign
                 neighbours.append(neighbour)
 
+
 class Optimizer:
     def __init__(self, cost_fn, start_sol=np.array([0,0,90]), domains = np.array([0.5,5,5])):
         self.cost_fn = cost_fn
@@ -27,6 +28,7 @@ class Optimizer:
             neighbour(neighbours,sol,i,d,+1,self.is_cooling)
             neighbour(neighbours,sol,i,d,-1,self.is_cooling)
         return neighbours
+
 
 class SA(Optimizer):
     def __init__(self, cost_fn, start_sol, domains, T=DEFAULT_SA_TEMPERATURE, cool_factor = 0.995):
@@ -66,6 +68,7 @@ class SA(Optimizer):
     
     def status(self):
         return ("SA Optimizer temperature : {}".format(round(self.T,1)))
+
 
 class TS(Optimizer):
 

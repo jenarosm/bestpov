@@ -64,5 +64,3 @@ def reset_matrices():
     glLoadIdentity()
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
-
-

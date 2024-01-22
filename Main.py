@@ -133,7 +133,6 @@ def keyFunction(key,x,y):
         else: 
             loadObj()
 
-
     glutPostRedisplay()
         
 """ PROFIT CALCULATION """
